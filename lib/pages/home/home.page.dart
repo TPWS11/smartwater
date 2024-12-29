@@ -4,12 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:smartwater/common/widgets/greeting.dart';
-import 'package:smartwater/common/widgets/waterflow.card.dart';
+import 'package:smartwater/common/widgets/mytitle.dart';
 import 'package:smartwater/core/bloc/soilmoisture/soil_moisture_bloc.dart';
-import 'package:smartwater/core/models/soilmoisture.model.dart';
+import 'package:smartwater/pages/home/screens/all.soil.moisture.screen.dart';
+import 'package:smartwater/pages/home/screens/all.water.flow.screen.dart';
+import 'package:smartwater/pages/home/screens/last.water.flow.screen.dart';
+import 'package:smartwater/pages/soilmoisture/soilmoisture.page.dart';
+import 'package:smartwater/pages/waterflow/waterflow.page.dart';
 
 import '../../core/bloc/waterflow/water_flow_bloc.dart';
-import '../../core/models/waterflow.model.dart';
+import '../../core/services/web.socket.service.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -82,25 +87,9 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
         
-            Padding(
-              padding: const EdgeInsets.only(left: 24.0),
-              child: BlocBuilder<WaterFlowBloc, WaterFlowState>(
-                builder: (context, state) {
-                  if (state is WaterFlowInitial) {
-                    return const Text('Initializing...');
-                  } else if (state is WaterFlowLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is WaterFlowLoaded) {
-                    return FlowRateBlinkCircle(
-                      data: state.data.last,
-                    );
-                  } else if (state is WaterFlowError) {
-                    return Center(child: Text('Error: ${state.message}'));
-                  } else {
-                    return const Center(child: Text('Data tidak ditemukan'));
-                  }
-                },
-              ),
+            const Padding(
+              padding: EdgeInsets.only(left: 24.0),
+              child: LastWaterFlowScreen(),
             ),
         
             Padding(
@@ -111,91 +100,46 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-            Container(
-              margin: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-              decoration: const BoxDecoration(
-                color: Colors.black87,
-                borderRadius: BorderRadius.only(topRight: Radius.circular(8.0), bottomRight: Radius.circular(8.0),),
-              ),
-              padding: const EdgeInsets.fromLTRB(24.0, 5.0, 15.0, 5.0),
-              child: const Text('Flow Rate',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 21.0,
-                  color: Colors.white,
-                ),
-              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 16.0, 24.0, 8.0),
+              child: MyTitle(title: 'Flow Rate', tap: () {
+                setState(() {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => BlocProvider<WaterFlowBloc>(
+                        create: (_) => WaterFlowBloc(service: WebSocketService(websocketUrl: 'ws://192.168.1.5:2001')),
+                        child: const WaterFlowPage(),
+                      ),
+                    ),
+                  );
+                });
+              }),
+            ),
+
+            const Padding(
+              padding: EdgeInsets.only(left: 12.0),
+              child: AllWaterFlowScreen(),
             ),
 
             Padding(
-              padding: const EdgeInsets.only(left: 12.0),
-              child: BlocBuilder<WaterFlowBloc, WaterFlowState>(
-                builder: (context, state) {
-                  if (state is WaterFlowInitial) {
-                    return const Text('Initializing...');
-                  } else if (state is WaterFlowLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is WaterFlowLoaded) {
-                    final recentData = state.data
-                        .toList()
-                      ..sort((a, b) => b.time.compareTo(a.time));
-                    final lastFiveData = recentData.take(4).toList();
-                    return _buildWaterFlowList(
-                      lastFiveData,
-                      context,
-                    );
-                  } else if (state is WaterFlowError) {
-                    return Center(child: Text('Error: ${state.message}'));
-                  } else {
-                    return const Center(child: Text('Data tidak ditemukan'));
-                  }
-                },
-              ),
+              padding: const EdgeInsets.fromLTRB(24.0, 8.0, 0, 8.0),
+              child: MyTitle(title: 'Moisture Level', tap: () {
+                setState(() {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => BlocProvider<SoilMoistureBloc>(
+                        create: (_) => SoilMoistureBloc(service: WebSocketService(websocketUrl: 'ws://192.168.1.5:2001')),
+                        child: const SoilMoisturePage(),
+                      ),
+                    ),
+                  );
+                });
+              }),
             ),
 
-            Align(
-              alignment: Alignment.centerRight,
-              child: Container(
-                margin: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                decoration: const BoxDecoration(
-                  color: Colors.black87,
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0), bottomLeft: Radius.circular(8.0),),
-                ),
-                padding: const EdgeInsets.fromLTRB(15.0, 5.0, 24.0, 5.0),
-                child: const Text('Moisture Level',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 21.0,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-        
-            Padding(
-              padding: const EdgeInsets.only(left: 24.0),
-              child: BlocBuilder<SoilMoistureBloc, SoilMoistureState>(
-                builder: (context, state) {
-                  if (state is SoilMoistureInitial) {
-                    return const Text('Initializing...');
-                  } else if (state is SoilMoistureLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is SoilMoistureLoaded) {
-                    final recentData = state.data
-                        .toList()
-                      ..sort((a, b) => b.time.compareTo(a.time));
-                    final lastFiveData = recentData.take(3).toList();
-                    return _buildSoilMoistureList(
-                      lastFiveData,
-                      context,
-                    );
-                  } else if (state is SoilMoistureError) {
-                    return Center(child: Text('Error: ${state.message}'));
-                  } else {
-                    return const Center(child: Text('Data tidak ditemukan'));
-                  }
-                },
-              ),
+            const Padding(
+              padding: EdgeInsets.only(left: 24.0),
+              child: AllSoilMoistureScreen(),
             ),
         
           ],
@@ -203,49 +147,5 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-}
-
-Widget _buildWaterFlowList(List<WaterFlowModel> data, BuildContext context) {
-  return MediaQuery.removePadding(
-    context: context,
-    removeTop: true,
-    child: ListView.builder(
-      itemCount: data.length,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        final item = data[index];
-        String formattedTime =
-        DateFormat('yyyy-MM-dd HH:mm:ss').format(item.time.toDate());
-        return ListTile(
-          leading: const Icon(Icons.water_drop),
-          title: Text('Flow Rate: ${item.flowRate} L/s'),
-          subtitle: Text('Time: $formattedTime'),
-        );
-      },
-    ),
-  );
-}
-
-Widget _buildSoilMoistureList(List<SoilMoistureModel> data, BuildContext context) {
-  return MediaQuery.removePadding(
-    context: context,
-    removeTop: true,
-    child: ListView.builder(
-      itemCount: data.length,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        final item = data[index];
-        String formattedTime =
-        DateFormat('yyyy-MM-dd HH:mm:ss').format(item.time.toDate());
-        return ListTile(
-          leading: const Icon(Icons.terrain), // Ikon untuk kelembaban tanah
-          title: Text('Moisture Level: ${item.moistureLevel.toStringAsFixed(2)}%'),
-          subtitle: Text('Time: $formattedTime'),
-        );
-      },
-    ),
-  );
 }
 

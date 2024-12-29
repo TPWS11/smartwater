@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:smartwater/core/models/waterflow.model.dart';
 
-class FlowRateBlinkCircle extends StatefulWidget {
+class FlowRateBlink extends StatefulWidget {
   final WaterFlowModel data;
 
-  const FlowRateBlinkCircle({super.key, required this.data});
+  const FlowRateBlink({super.key, required this.data});
 
   @override
-  State<FlowRateBlinkCircle> createState() => _FlowRateBlinkCircleState();
+  State<FlowRateBlink> createState() => _FlowRateBlinkState();
 }
 
-class _FlowRateBlinkCircleState extends State<FlowRateBlinkCircle>
+class _FlowRateBlinkState extends State<FlowRateBlink>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Color?> _iconColorAnimation;
