@@ -19,14 +19,6 @@ class WaterFlowLoaded extends WaterFlowState {
   List<Object?> get props => [data];
 }
 
-class WaterFlowLastLoaded extends WaterFlowState {
-  final WaterFlowModel data;
-
-  WaterFlowLastLoaded({required this.data});
-
-  @override
-  List<Object?> get props => [data];
-}
 
 class WaterFlowError extends WaterFlowState {
   final String message;

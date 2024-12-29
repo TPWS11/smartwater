@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'item.model.dart';
 
 class WaterFlowModel extends ItemModel{
@@ -8,8 +10,10 @@ class WaterFlowModel extends ItemModel{
   factory WaterFlowModel.fromJson(Map<String, dynamic> json) {
     return WaterFlowModel(
       id: json['id'] ?? '',
-      flowRate: json['flowRate'] ?? 0.0,
-      time: json['timestamp'] != null ? DateTime.parse(json['timestamp']) : DateTime.now(),
+      flowRate: (json['flowRate'] as num).toDouble(),
+      time: json['time'] != null
+          ? Timestamp(json['time']['_seconds'], json['time']['_nanoseconds'])
+          : Timestamp.now(),
     );
   }
 

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smartwater/core/bloc/soilmoisture/soil_moisture_bloc.dart';
 import 'package:smartwater/pages/home/home.page.dart';
 
 import 'core/bloc/waterflow/water_flow_bloc.dart';
 import 'core/services/web.socket.service.dart';
 
-void main() {
+void main() async{
   runApp(const MyApp());
 }
 
@@ -22,6 +23,10 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => WaterFlowBloc(service: WebSocketService(websocketUrl: 'ws://192.168.1.5:2001')),
+          ),
+
+          BlocProvider(
+            create: (context) => SoilMoistureBloc(service: WebSocketService(websocketUrl: 'ws://192.168.1.5:2001')),
           ),
         ],
         child: const HomePage(),

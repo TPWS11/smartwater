@@ -6,19 +6,10 @@ abstract class WaterFlowEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class FetchAllWaterFlowData extends WaterFlowEvent {
+class FetchWaterFlowData extends WaterFlowEvent {
   final List<WaterFlowModel> data;
 
-  FetchAllWaterFlowData({required this.data});
-
-  @override
-  List<Object?> get props => [data];
-}
-
-class GetLastWaterFlow extends WaterFlowEvent {
-  final WaterFlowModel data;
-
-  GetLastWaterFlow({required this.data});
+  FetchWaterFlowData({required this.data});
 
   @override
   List<Object?> get props => [data];

@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 abstract class ItemModel {
   String id;
-  DateTime time;
+  Timestamp time;
 
   ItemModel({ required this.id, required this.time });
 

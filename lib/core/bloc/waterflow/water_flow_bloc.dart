@@ -17,15 +17,12 @@ class WaterFlowBloc extends Bloc<WaterFlowEvent, WaterFlowState> {
   WaterFlowBloc({required this.service}) : super(WaterFlowInitial()) {
     _subscription = service.stream.listen(
           (parsedData) {
-        if (parsedData['type'] == 'waterflow' && parsedData['category'] == 'all') {
+        if (parsedData['type'] == 'waterflow') {
           final List<WaterFlowModel> waterFlowData = (parsedData['data'] as List)
               .map((item) => WaterFlowModel.fromJson(item))
-              .toList();
+              .toList()..sort((a, b) => a.time.compareTo(b.time));
 
-          add(FetchAllWaterFlowData(data: waterFlowData));
-        } else if (parsedData['type'] == 'waterflow' && parsedData['category'] == 'last') {
-          final lastWaterFlowData = WaterFlowModel.fromJson(parsedData['data']);
-          add(GetLastWaterFlow(data: lastWaterFlowData));
+          add(FetchWaterFlowData(data: waterFlowData));
         } else {
           print('Unsupported type or category: ${parsedData['type']} ${parsedData['category']}');
         }
@@ -34,12 +31,8 @@ class WaterFlowBloc extends Bloc<WaterFlowEvent, WaterFlowState> {
       cancelOnError: true,
     );
 
-    on<FetchAllWaterFlowData>((event, emit) {
+    on<FetchWaterFlowData>((event, emit) {
       emit(WaterFlowLoaded(data: event.data));
-    });
-
-    on<GetLastWaterFlow>((event, emit) {
-      emit(WaterFlowLastLoaded(data: event.data));
     });
 
     on<WebSocketError>((event, emit) {
