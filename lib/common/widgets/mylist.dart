@@ -24,7 +24,7 @@ class MyList extends StatelessWidget {
             DateFormat('yyyy-MM-dd HH:mm:ss').format(item.time.toDate());
             return MyListTile(
               type: type,
-              number: type == 'Flow Rate' ? '${item.flowRate} L/s' : '${item.moistureLevel.toStringAsFixed(2)}%',
+              number: type == 'Flow Rate' ? '${item.flowRate} L/min' : '${item.moistureLevel.toStringAsFixed(2)}%',
               time: formattedTime,
             );
           }
